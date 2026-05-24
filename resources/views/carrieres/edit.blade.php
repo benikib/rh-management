@@ -5,7 +5,7 @@
 
     @include('partials.flash')
 
-    <div class="bg-white rounded-xl shadow p-6 max-w-2xl">
+    <div class="bg-white rounded-xl shadow p-6 max-w-2xl  mx-auto">
         <form action="{{ route('carrieres.update', $carriere) }}" method="POST" class="space-y-4">
             @csrf
             @method('PUT')

@@ -39,21 +39,13 @@
     <!-- Argon Dashboard CSS -->
     <link href="{{ asset('assets/css/argon-dashboard-tailwind.min.css') }}" rel="stylesheet" />
 
-    <!-- Skeleton Loaders -->
-    @include('components.skeleton-loaders')
-
     <!-- Vite Scripts -->
    
 </head>
 
-<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+<body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500">
     
-    <!-- Global Loader -->
-    @if(!isset($disableGlobalLoader) || !$disableGlobalLoader)
-        @include('components.global-loader', ['context' => $loaderContext ?? 'general'])
-    @endif
-    
-    <div class="absolute w-full bg-blue-500 dark:hidden min-h-12"></div>
+    <div class="absolute w-full bg-blue-500 min-h-12"></div>
     
     <!-- Main Container - Flex layout for sidebar + content -->
     <div class="flex min-h-screen">
@@ -68,114 +60,19 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 md:hidden"></div>
 
         <!-- Sidebar -->
-        @include('layoutsadmin.aside')
+        
+
         <!-- Main Content Area -->
         <main class="flex-1 overflow-x-hidden">
-            <!-- Page Header -->
-            @isset($header)
-                <header class="bg-blue-500 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
            
 
             <!-- Content Slot -->
             <div class="p-6">
                 {{ $slot }}
             </div>
-            @if(session('error'))
-
-<div id="errorModal"
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-
-    <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden">
-
-        <!-- Header -->
-        <div class="bg-red-500 px-6 py-4">
-            <h2 class="text-white font-bold text-lg">
-                ⚠️ Attention
-            </h2>
-        </div>
-
-        <!-- Body -->
-        <div class="p-6 text-center">
-
-            <p class="text-gray-700 text-lg font-medium">
-                {{ session('error') }}
-            </p>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="flex justify-center gap-3 p-4 border-t">
-
-            <button onclick="closeErrorModal()"
-                    class="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
-                OK
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-@endif
-<script>
-setTimeout(() => {
-
-    const modal = document.getElementById('errorModal');
-
-    if (modal) {
-        modal.style.display = 'none';
-    }
-
-}, 5000);
-</script>
-<script>
-function closeErrorModal() {
-
-    const modal = document.getElementById('errorModal');
-
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-</script>
         </main>
     </div>
 
-    <!-- MODAL LOGOUT -->
-    <dialog id="logoutModal" class="rounded-2xl p-0 w-full max-w-md bg-white shadow-xl">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-
-            <div class="bg-red-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
-                <span class="font-semibold">Confirmation de déconnexion</span>
-                <button type="button" onclick="logoutModal.close()" class="hover:bg-red-700 rounded-full p-1 transition">
-                    ✕
-                </button>
-            </div>
-
-            <div class="p-6 text-gray-700">
-                <p>Voulez-vous vraiment vous déconnecter ?</p>
-                <p class="text-sm text-gray-500 mt-2">Vous devrez vous reconnecter pour accéder à votre compte.</p>
-            </div>
-
-            <div class="flex justify-end gap-2 p-4 bg-gray-100 rounded-b-2xl">
-                <button type="button" onclick="logoutModal.close()" 
-                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition">
-                    Annuler
-                </button>
-                <button type="submit" 
-                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition">
-                    Déconnexion
-                </button>
-            </div>
-        </form>
-    </dialog>
 
     <style>
         .sidebar-item {

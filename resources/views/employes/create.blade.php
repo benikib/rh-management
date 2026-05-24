@@ -5,7 +5,7 @@
 
     @include('partials.flash')
 
-    <div class="bg-white rounded-xl shadow p-6 max-w-4xl">
+    <div class="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto">
         <form action="{{ route('employes.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @include('employes._form')

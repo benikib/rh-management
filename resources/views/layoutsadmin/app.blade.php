@@ -46,14 +46,14 @@
    
 </head>
 
-<body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+<body class="m-0 font-sans text-base antialiased font-normal leading-default bg-gray-50 text-slate-500">
     
     <!-- Global Loader -->
     @if(!isset($disableGlobalLoader) || !$disableGlobalLoader)
         @include('components.global-loader', ['context' => $loaderContext ?? 'general'])
     @endif
     
-    <div class="absolute w-full bg-blue-500 dark:hidden min-h-12"></div>
+    <div class="absolute w-full bg-blue-500 min-h-12"></div>
     
     <!-- Main Container - Flex layout for sidebar + content -->
     <div class="flex min-h-screen">
@@ -68,7 +68,7 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 md:hidden"></div>
 
         <!-- Sidebar -->
-        @include('layoutsadmin.aside')
+        @include('layouts.aside')
         <!-- Main Content Area -->
         <main class="flex-1 overflow-x-hidden">
             <!-- Page Header -->
@@ -79,71 +79,11 @@
                     </div>
                 </header>
             @endisset
-           
 
             <!-- Content Slot -->
             <div class="p-6">
                 {{ $slot }}
             </div>
-            @if(session('error'))
-
-<div id="errorModal"
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-
-    <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden">
-
-        <!-- Header -->
-        <div class="bg-red-500 px-6 py-4">
-            <h2 class="text-white font-bold text-lg">
-                ⚠️ Attention
-            </h2>
-        </div>
-
-        <!-- Body -->
-        <div class="p-6 text-center">
-
-            <p class="text-gray-700 text-lg font-medium">
-                {{ session('error') }}
-            </p>
-
-        </div>
-
-        <!-- Footer -->
-        <div class="flex justify-center gap-3 p-4 border-t">
-
-            <button onclick="closeErrorModal()"
-                    class="px-5 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
-                OK
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-@endif
-<script>
-setTimeout(() => {
-
-    const modal = document.getElementById('errorModal');
-
-    if (modal) {
-        modal.style.display = 'none';
-    }
-
-}, 5000);
-</script>
-<script>
-function closeErrorModal() {
-
-    const modal = document.getElementById('errorModal');
-
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-</script>
         </main>
     </div>
 

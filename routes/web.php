@@ -11,6 +11,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EmployePresenceController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,5 +37,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('documents', DocumentController::class);
     Route::resource('users', UserController::class);
 });
+Route::get('emp/presence', [EmployePresenceController::class, 'index']);
+Route::post('emp/presence/check', [EmployePresenceController::class, 'check']);
+Route::view('/qr-presence', 'presences.qr');
 
 require __DIR__.'/auth.php';
