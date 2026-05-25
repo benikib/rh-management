@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             DepartementSeeder::class,
             PosteSeeder::class,
             EmployeSeeder::class,
-            PresenceSeeder::class,
+            //PresenceSeeder::class,
             CarriereSeeder::class,
             CongeSeeder::class,
             DocumentSeeder::class,

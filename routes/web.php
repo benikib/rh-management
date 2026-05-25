@@ -40,5 +40,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('emp/presence', [EmployePresenceController::class, 'index']);
 Route::post('emp/presence/check', [EmployePresenceController::class, 'check']);
 Route::view('/qr-presence', 'presences.qr');
+use App\Http\Controllers\QRCodeController;
 
+// Routes QR Code
+
+
+// Routes QR Code
+Route::prefix('qr')->group(function () {
+    Route::get('/', [QRCodeController::class, 'index'])->name('qr.index');
+    Route::get('/scan/{token}', [QRCodeController::class, 'scanForm']);
+    Route::post('/pointage', [QRCodeController::class, 'pointage']);
+    Route::post('/pointage-manuel', [QRCodeController::class, 'pointageManuel']); // Nouvelle route
+    Route::post('/regenerate', [QRCodeController::class, 'regenerate']);
+});
+
+Route::post('/qr/verifier-employe', [QRCodeController::class, 'verifierEmploye']);
 require __DIR__.'/auth.php';
