@@ -19,6 +19,10 @@
             <p class="text-gray-700">{{ $departement->description ?: '—' }}</p>
         </div>
         <div>
+            <p class="text-sm text-gray-500">Direction</p>
+            <p class="text-gray-700">{{ $departement->direction?->nom ?? '—' }}</p>
+        </div>
+        <div>
             <p class="text-sm text-gray-500 mb-2">Employés ({{ $departement->employes->count() }})</p>
             @if ($departement->employes->isNotEmpty())
                 <ul class="list-disc list-inside text-gray-700">

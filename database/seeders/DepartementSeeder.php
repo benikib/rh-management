@@ -3,12 +3,21 @@
 namespace Database\Seeders;
 
 use App\Models\Departement;
+use App\Models\Direction;
 use Illuminate\Database\Seeder;
 
 class DepartementSeeder extends Seeder
 {
     public function run(): void
     {
+        $defaults = [
+            'Ressources Humaines' => 'Direction Administrative',
+            'Informatique' => 'Direction Technique',
+            'Finance' => 'Direction Administrative',
+            'Commercial' => 'Direction Commerciale',
+            'Logistique' => 'Direction Générale',
+        ];
+
         $departements = [
             [
                 'nom' => 'Ressources Humaines',
@@ -33,7 +42,13 @@ class DepartementSeeder extends Seeder
         ];
 
         foreach ($departements as $departement) {
-            Departement::firstOrCreate(['nom' => $departement['nom']], $departement);
+            $direction = Direction::where('nom', $defaults[$departement['nom']] ?? 'Direction Générale')->first();
+            $departement['direction_id'] = $direction?->id;
+
+            Departement::firstOrCreate(
+                ['nom' => $departement['nom']],
+                $departement
+            );
         }
     }
 }

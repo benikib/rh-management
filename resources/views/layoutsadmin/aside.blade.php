@@ -49,6 +49,13 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('directions.index') }}"
+               class="sidebar-item {{ request()->routeIs('directions.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-sitemap"></i>
+                <span>Directions</span>
+            </a>
+        </li>
+        <li>
             <a href="{{ route('postes.index') }}"
                class="sidebar-item {{ request()->routeIs('postes.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-briefcase"></i>
@@ -90,6 +97,27 @@
                class="sidebar-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-file"></i>
                 <span>Documents</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('criteres.index') }}"
+               class="sidebar-item {{ request()->routeIs('criteres.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Critères</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('evaluations.all') }}"
+               class="sidebar-item {{ request()->routeIs('evaluations.all') ? 'active' : '' }}">
+                <i class="fa-solid fa-star"></i>
+                <span>Évaluations</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('reports.index') }}"
+               class="sidebar-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>Rapports</span>
             </a>
         </li>
 

@@ -39,7 +39,13 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm">
-                                @include('partials.crud-actions', ['routePrefix' => 'employes', 'model' => $employe])
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('evaluations.create', $employe->matricule) }}"
+                                       class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 rounded hover:bg-emerald-100">
+                                        <i class="fa-solid fa-star mr-1"></i> Évaluer
+                                    </a>
+                                    @include('partials.crud-actions', ['routePrefix' => 'employes', 'model' => $employe])
+                                </div>
                             </td>
                         </tr>
                     @empty

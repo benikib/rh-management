@@ -14,13 +14,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
+            DirectionSeeder::class,
             DepartementSeeder::class,
             PosteSeeder::class,
             EmployeSeeder::class,
-            //PresenceSeeder::class,
+            PresenceSeeder::class,
             CarriereSeeder::class,
             CongeSeeder::class,
             DocumentSeeder::class,
+            CritereSeeder::class,
         ]);
     }
 }

@@ -69,4 +69,12 @@ class Employe extends Model
     {
         return "{$this->prenom} {$this->nom} {$this->postnom}";
     }
+    public function evaluations()
+{
+    return $this->hasMany(
+        Evaluation::class,
+        'employe_matricule',
+        'matricule'
+    );
+}
 }

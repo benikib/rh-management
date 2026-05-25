@@ -14,6 +14,16 @@
                 <x-input-error :messages="$errors->get('nom')" class="mt-2" />
             </div>
             <div>
+                <x-input-label for="direction_id" value="Direction" />
+                <select id="direction_id" name="direction_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                    <option value="">Sélectionner une direction</option>
+                    @foreach($directions as $direction)
+                        <option value="{{ $direction->id }}" {{ old('direction_id') == $direction->id ? 'selected' : '' }}>{{ $direction->nom }}</option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('direction_id')" class="mt-2" />
+            </div>
+            <div>
                 <x-input-label for="description" value="Description" />
                 <textarea id="description" name="description" rows="4"
                           class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description') }}</textarea>
