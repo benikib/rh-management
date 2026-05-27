@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
+    protected const SCHEDULE_ARRIVAL = '08:00:00';
+    protected const SCHEDULE_DEPARTURE = '17:00:00';
+
     public function getReportTypes(): array
     {
         return [
@@ -151,11 +154,24 @@ class ReportService
         $query = $this->applyEmployeeFilter($query, $filters);
         $records = $query->orderBy('date_presence', 'desc')->get();
 
+        $categoryCounts = $records
+            ->map(fn (Presence $presence) => $this->getPresenceCategory($presence))
+            ->countBy()
+            ->toArray();
+
         $summary = [
             'present' => $records->where('statut', 'Present')->count(),
             'absent' => $records->where('statut', 'Absent')->count(),
             'late' => $records->where('statut', 'Retard')->count(),
             'conge' => $records->where('statut', 'Conge')->count(),
+            'on_time' => $categoryCounts['on_time'] ?? 0,
+            'early_departure' => $categoryCounts['early_departure'] ?? 0,
+            'late_arrival' => $categoryCounts['late_arrival'] ?? 0,
+            'absent_unjustified' => $categoryCounts['absent_unjustified'] ?? 0,
+            'justified_absence' => $categoryCounts['justified_absence'] ?? 0,
+            'justified_early_departure' => $categoryCounts['justified_early_departure'] ?? 0,
+            'justified_late' => $categoryCounts['justified_late'] ?? 0,
+            'holiday' => $categoryCounts['holiday'] ?? 0,
             'total' => $records->count(),
         ];
         $summary['attendance_rate'] = $summary['total'] ? round(100 * ($summary['present'] / $summary['total']), 2) : 0;
@@ -164,6 +180,8 @@ class ReportService
             'title' => 'Rapport des présences',
             'meta' => $summary,
             'filters' => $filters,
+            'legend' => $this->getPresenceCalendarLegend(),
+            'calendar' => $this->buildPresenceCalendar($start, $end, $records),
             'details' => $records->map(function (Presence $presence) {
                 return [
                     'date' => $presence->date_presence->format('d/m/Y'),
@@ -176,6 +194,171 @@ class ReportService
                     'remarque' => $presence->remarque,
                 ];
             })->toArray(),
+        ];
+    }
+
+    protected function buildPresenceCalendar(Carbon $start, Carbon $end, $records): array
+    {
+        $groupedByDate = $records->groupBy(fn (Presence $presence) => $presence->date_presence->format('Y-m-d'));
+        $calendarStart = $start->copy()->startOfWeek(Carbon::MONDAY);
+        $calendarEnd = $end->copy()->endOfWeek(Carbon::SUNDAY);
+        $weeks = [];
+        $current = $calendarStart->copy();
+
+        while ($current->lte($calendarEnd)) {
+            $week = [];
+
+            for ($day = 0; $day < 7; $day++) {
+                $dateKey = $current->format('Y-m-d');
+                $dayRecords = $groupedByDate->get($dateKey, collect());
+                $week[] = $this->getPresenceDaySummary($current, $dayRecords, $start, $end);
+                $current->addDay();
+            }
+
+            $weeks[] = $week;
+        }
+
+        return $weeks;
+    }
+
+    protected function getPresenceDaySummary(Carbon $date, $records, Carbon $start, Carbon $end): array
+    {
+        $withinRange = $date->between($start, $end);
+        $status = 'empty';
+        $label = $withinRange ? 'Aucun' : '';
+        $tooltip = $withinRange ? 'Aucune donnée de présence enregistrée' : '';
+
+        if ($withinRange && $records->isNotEmpty()) {
+            $categories = $records->map(fn (Presence $presence) => $this->getPresenceCategory($presence))->unique()->values()->toArray();
+            $status = $this->pickPresenceCalendarStatus($categories);
+            $label = $this->getPresenceCalendarLabel($status);
+            $tooltip = implode(', ', $records->map(fn (Presence $presence) => trim($presence->statut . ' ' . ($presence->remarque ?? '')))->filter()->unique()->toArray());
+        }
+
+        return [
+            'date' => $date->copy(),
+            'within_range' => $withinRange,
+            'status' => $status,
+            'label' => $label,
+            'tooltip' => $tooltip,
+        ];
+    }
+
+    protected function pickPresenceCalendarStatus(array $statuses): string
+    {
+        $priority = [
+            'holiday',
+            'absent_unjustified',
+            'justified_absence',
+            'justified_late',
+            'justified_early_departure',
+            'late_arrival',
+            'early_departure',
+            'on_time',
+            'present',
+            'unknown',
+        ];
+
+        foreach ($priority as $status) {
+            if (in_array($status, $statuses, true)) {
+                return $status;
+            }
+        }
+
+        return 'empty';
+    }
+
+    protected function getPresenceCalendarLabel(string $status): string
+    {
+        return match ($status) {
+            'holiday' => 'Jour férié',
+            'absent_unjustified' => 'Absent sans justificatif',
+            'justified_absence' => 'Absence justifiée',
+            'justified_late' => 'Retard justifié',
+            'justified_early_departure' => 'Départ justifié avant l’heure',
+            'late_arrival' => 'Arrivée en retard',
+            'early_departure' => 'Départ avant l’heure',
+            'on_time' => 'Présent à l’heure',
+            'present' => 'Présent',
+            default => 'Aucun',
+        };
+    }
+
+    protected function getPresenceCategory(Presence $presence): string
+    {
+        $remark = strtolower($presence->remarque ?? '');
+        $isJustified = str_contains($remark, 'justifié') || str_contains($remark, 'justifie');
+        $isHoliday = str_contains($remark, 'féri') || str_contains($remark, 'ferie') || str_contains($remark, 'vacances');
+
+        if ($presence->statut === 'Ferie' || $isHoliday) {
+            return 'holiday';
+        }
+
+        if (in_array($presence->statut, ['Conge', 'Congé'], true) || ($presence->statut === 'Absent' && $isJustified)) {
+            return 'justified_absence';
+        }
+
+        if ($presence->statut === 'Absent') {
+            return 'absent_unjustified';
+        }
+
+        if ($presence->statut === 'Retard') {
+            return $isJustified ? 'justified_late' : 'late_arrival';
+        }
+
+        if ($presence->statut === 'Present') {
+            $arrival = $presence->heure_arrivee ? Carbon::parse($presence->heure_arrivee) : null;
+            $departure = $presence->heure_depart ? Carbon::parse($presence->heure_depart) : null;
+            $scheduledArrival = Carbon::parse(self::SCHEDULE_ARRIVAL);
+            $scheduledDeparture = Carbon::parse(self::SCHEDULE_DEPARTURE);
+
+            $arrivedOnTime = $arrival && $arrival->lte($scheduledArrival);
+            $leftOnTime = $departure && $departure->gte($scheduledDeparture);
+            $leftEarly = $departure && $departure->lt($scheduledDeparture);
+            $arrivedLate = $arrival && $arrival->gt($scheduledArrival);
+
+            if ($leftEarly && $isJustified) {
+                return 'justified_early_departure';
+            }
+
+            if ($arrivedLate && $isJustified) {
+                return 'justified_late';
+            }
+
+            if ($arrivedOnTime && $leftOnTime) {
+                return 'on_time';
+            }
+
+            if ($arrivedOnTime && $leftEarly) {
+                return 'early_departure';
+            }
+
+            if ($arrivedLate && $leftOnTime) {
+                return 'late_arrival';
+            }
+
+            if ($arrivedLate && $leftEarly) {
+                return $isJustified ? 'justified_late' : 'late_arrival';
+            }
+
+            return 'present';
+        }
+
+        return 'unknown';
+    }
+
+    protected function getPresenceCalendarLegend(): array
+    {
+        return [
+            ['status' => 'on_time', 'label' => 'Présent. Arrivée et départ à l’heure', 'bg' => 'bg-emerald-500', 'text' => 'text-white'],
+            ['status' => 'absent_unjustified', 'label' => 'Absent sans justificatif', 'bg' => 'bg-red-500', 'text' => 'text-white'],
+            ['status' => 'early_departure', 'label' => 'Présent. Arrivée à l’heure, départ avant', 'bg' => 'bg-amber-400', 'text' => 'text-slate-900'],
+            ['status' => 'late_arrival', 'label' => 'Présent. Arrivée en retard, départ à l’heure', 'bg' => 'bg-orange-500', 'text' => 'text-white'],
+            ['status' => 'justified_absence', 'label' => 'Absence justifiée', 'bg' => 'bg-slate-900', 'text' => 'text-white'],
+            ['status' => 'justified_early_departure', 'label' => 'Départ justifié avant l’heure', 'bg' => 'bg-sky-300', 'text' => 'text-slate-900'],
+            ['status' => 'justified_late', 'label' => 'Retard justifié', 'bg' => 'bg-sky-900', 'text' => 'text-white'],
+            ['status' => 'holiday', 'label' => 'Jour férié', 'bg' => 'bg-violet-600', 'text' => 'text-white'],
+            ['status' => 'empty', 'label' => 'Aucun enregistrement', 'bg' => 'bg-slate-100', 'text' => 'text-slate-500'],
         ];
     }
 
