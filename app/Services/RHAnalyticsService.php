@@ -14,7 +14,7 @@ class RHAnalyticsService
 {
     protected int $cacheSeconds = 600;
 
-    public function getGlobalMetrics(): array
+    public function     getGlobalMetrics(): array
     {
         if (Cache::has('rh.analytics.global')) {
             $cached = Cache::get('rh.analytics.global');
@@ -144,8 +144,8 @@ class RHAnalyticsService
             ->pluck('total', 'sexe')
             ->all();
 
-        $totalMasculin = (int) ($genderSummary['Masculin'] ?? $genderSummary['M'] ?? $genderSummary['Homme'] ?? $genderSummary['male'] ?? 0);
-        $totalFeminin = (int) ($genderSummary['Féminin'] ?? $genderSummary['F'] ?? $genderSummary['Femme'] ?? $genderSummary['female'] ?? 0);
+        $totalMasculin = $this->getGenderCount($genderSummary, ['Masculin', 'M', 'Homme', 'male']);
+        $totalFeminin = $this->getGenderCount($genderSummary, ['Feminin', 'Féminin', 'F', 'Femme', 'female', 'feminin']);
 
         return [
             'total_employes' => (int) DB::table('employes')->count(),
@@ -248,8 +248,8 @@ class RHAnalyticsService
                 ->pluck('total', 'sexe')
                 ->all();
 
-            $masculinCount = (int) ($genderSummary['Masculin'] ?? $genderSummary['M'] ?? $genderSummary['Homme'] ?? $genderSummary['male'] ?? 0);
-            $femininCount = (int) ($genderSummary['Féminin'] ?? $genderSummary['F'] ?? $genderSummary['Femme'] ?? $genderSummary['female'] ?? 0);
+            $masculinCount = $this->getGenderCount($genderSummary, ['Masculin', 'M', 'Homme', 'male']);
+            $femininCount = $this->getGenderCount($genderSummary, ['Feminin', 'Féminin', 'F', 'Femme', 'female', 'feminin']);
 
             return [
                 'id' => $direction->id,
@@ -266,6 +266,35 @@ class RHAnalyticsService
                 'performance_score' => $performanceScore,
             ];
         })->toArray();
+    }
+
+    protected function getGenderCount(array $genderSummary, array $aliases): int
+    {
+        $normalizedSummary = collect($genderSummary)
+            ->mapWithKeys(fn ($count, $value) => [$this->normalizeGenderKey((string) $value) => (int) $count])
+            ->all();
+
+        foreach ($aliases as $alias) {
+            $normalizedAlias = $this->normalizeGenderKey((string) $alias);
+            if (array_key_exists($normalizedAlias, $normalizedSummary)) {
+                return $normalizedSummary[$normalizedAlias];
+            }
+        }
+
+        return 0;
+    }
+
+    protected function normalizeGenderKey(string $value): string
+    {
+        $value = trim($value);
+        $value = strtolower($value);
+        $value = str_replace(
+            ['é', 'è', 'ê', 'ë', 'à', 'â', 'ä', 'î', 'ï', 'ô', 'ö', 'ù', 'û', 'ü', 'ç'],
+            ['e', 'e', 'e', 'e', 'a', 'a', 'a', 'i', 'i', 'o', 'o', 'u', 'u', 'u', 'c'],
+            $value
+        );
+
+        return preg_replace('/[^a-z0-9]+/', '', $value);
     }
 
     protected function buildAttendanceTrend(int $days): array
