@@ -21,6 +21,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom complet</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type de contrat</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
@@ -33,6 +34,7 @@
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $employe->nom_complet }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $employe->departement?->nom ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $employe->poste?->titre ?? '—' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ $employe->activeContract?->contractType?->label ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm">
                                 <span class="px-2 py-1 text-xs rounded-full {{ $employe->statut === 'Actif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                                     {{ $employe->statut }}

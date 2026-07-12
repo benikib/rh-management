@@ -34,4 +34,43 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function hasRole(string|array $roles): bool
+    {
+        $roleNames = array_map('strval', (array) $roles);
+        $roleName = optional($this->role)->nom;
+
+        if ($roleName === null) {
+            return false;
+        }
+
+        if ($roleName === 'Administrateur') {
+            return true;
+        }
+
+        return in_array($roleName, $roleNames, true);
+    }
+
+    public function canAccessModule(string $module): bool
+    {
+        if ($this->hasRole('Administrateur')) {
+            return true;
+        }
+
+        return match ($module) {
+            'users', 'roles' => $this->hasRole(['Responsable RH']),
+            'employes', 'contract-types', 'employee-statuses', 'employee-family-infos', 'employee-dependents', 'employee-position-history', 'employee-history-logs' => $this->hasRole(['Chef du personnel', 'Responsable RH']),
+            'missions' => $this->hasRole(['Chef du personnel', 'Charge de mission', 'Responsable RH']),
+            'formations', 'competences', 'stagiaires' => $this->hasRole(['Charge de formation', 'Responsable RH']),
+            'presences', 'paie' => $this->hasRole(['Comptable', 'Responsable RH']),
+            'personnel-tasks', 'evaluations' => $this->hasRole(['Chef de service', 'Directeur', 'Responsable RH']),
+            'reports' => $this->hasRole(['Directeur', 'Responsable RH']),
+            default => true,
+        };
+    }
+
+    public function canManageEvaluations(): bool
+    {
+        return $this->hasRole(['Administrateur', 'Responsable RH', 'Chef de service', 'Directeur']);
+    }
 }

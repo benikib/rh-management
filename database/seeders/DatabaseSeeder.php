@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             CongeSeeder::class,
             DocumentSeeder::class,
             CritereSeeder::class,
+            EmployeeStructureSeeder::class,
+            EmployeeStatisticsSeeder::class,
         ]);
     }
 }

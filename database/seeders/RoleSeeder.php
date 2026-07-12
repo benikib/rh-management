@@ -13,6 +13,13 @@ class RoleSeeder extends Seeder
             'Administrateur',
             'Responsable RH',
             'Manager',
+            'Chef du personnel',
+            'Charge de mission',
+            'Charge de formation',
+            'Comptable',
+            'Comptable (Service Paie)',
+            'Chef de service',
+            'Directeur',
             'Employé',
         ];
 

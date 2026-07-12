@@ -25,6 +25,7 @@
         </li>
 
         <li class="text-xs text-gray-400 uppercase px-4 pt-4 pb-2">Administration</li>
+        @if(auth()->check() && auth()->user()->canAccessModule('roles'))
         <li>
             <a href="{{ route('roles.index') }}"
                class="sidebar-item {{ request()->routeIs('roles.*') ? 'active' : '' }}">
@@ -32,6 +33,8 @@
                 <span>Rôles</span>
             </a>
         </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('users'))
         <li>
             <a href="{{ route('users.index') }}"
                class="sidebar-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
@@ -39,6 +42,16 @@
                 <span>Utilisateurs</span>
             </a>
         </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('employee-statuses'))
+        <li>
+            <a href="{{ route('employee-statuses.index') }}"
+               class="sidebar-item {{ request()->routeIs('employee-statuses.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Statuts RH</span>
+            </a>
+        </li>
+        @endif
 
         <li class="text-xs text-gray-400 uppercase px-4 pt-4 pb-2">Organisation</li>
         <li>
@@ -62,6 +75,7 @@
                 <span>Postes</span>
             </a>
         </li>
+        @if(auth()->check() && auth()->user()->canAccessModule('employes'))
         <li>
             <a href="{{ route('employes.index') }}"
                class="sidebar-item {{ request()->routeIs('employes.*') ? 'active' : '' }}">
@@ -69,8 +83,98 @@
                 <span>Employés</span>
             </a>
         </li>
+        @endif
+
+        <li class="text-xs text-gray-400 uppercase px-4 pt-4 pb-2">Ressources RH</li>
+        @if(auth()->check() && auth()->user()->canAccessModule('formations'))
+        <li>
+            <a href="{{ route('competences.index') }}"
+               class="sidebar-item {{ request()->routeIs('competences.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span>Compétences</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('formations.index') }}"
+               class="sidebar-item {{ request()->routeIs('formations.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Formations</span>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('stagiaires.index') }}"
+               class="sidebar-item {{ request()->routeIs('stagiaires.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>Stagiaires</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('contract-types'))
+        <li>
+            <a href="{{ route('contract-types.index') }}"
+               class="sidebar-item {{ request()->routeIs('contract-types.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-contract"></i>
+                <span>Types de contrat</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('missions'))
+        <li>
+            <a href="{{ route('missions.index') }}"
+               class="sidebar-item {{ request()->routeIs('missions.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-route"></i>
+                <span>Missions</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('personnel-tasks'))
+        <li>
+            <a href="{{ route('personnel-tasks.index') }}"
+               class="sidebar-item {{ request()->routeIs('personnel-tasks.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Tâches</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('employee-family-infos'))
+        <li>
+            <a href="{{ route('employee-family-infos.index') }}"
+               class="sidebar-item {{ request()->routeIs('employee-family-infos.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-house-user"></i>
+                <span>Dossier familial</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('employee-dependents'))
+        <li>
+            <a href="{{ route('employee-dependents.index') }}"
+               class="sidebar-item {{ request()->routeIs('employee-dependents.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-user-group"></i>
+                <span>Personnes à charge</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('employee-position-history'))
+        <li>
+            <a href="{{ route('employee-position-history.index') }}"
+               class="sidebar-item {{ request()->routeIs('employee-position-history.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-history"></i>
+                <span>Historique de poste</span>
+            </a>
+        </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('employee-history-logs'))
+        <li>
+            <a href="{{ route('employee-history-logs.index') }}"
+               class="sidebar-item {{ request()->routeIs('employee-history-logs.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-book"></i>
+                <span>Journal RH</span>
+            </a>
+        </li>
+        @endif
 
         <li class="text-xs text-gray-400 uppercase px-4 pt-4 pb-2">Gestion RH</li>
+        @if(auth()->check() && auth()->user()->canAccessModule('presences'))
         <li>
             <a href="{{ route('presences.index') }}"
                class="sidebar-item {{ request()->routeIs('presences.*') ? 'active' : '' }}">
@@ -78,6 +182,7 @@
                 <span>Présences</span>
             </a>
         </li>
+        @endif
         <li>
             <a href="{{ route('conges.index') }}"
                class="sidebar-item {{ request()->routeIs('conges.*') ? 'active' : '' }}">
@@ -106,13 +211,16 @@
                 <span>Critères</span>
             </a>
         </li>
+        @if(auth()->check() && auth()->user()->canManageEvaluations())
         <li>
             <a href="{{ route('evaluations.all') }}"
-               class="sidebar-item {{ request()->routeIs('evaluations.all') ? 'active' : '' }}">
+               class="sidebar-item {{ request()->routeIs('evaluations.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star"></i>
                 <span>Évaluations</span>
             </a>
         </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('reports'))
         <li>
             <a href="{{ route('reports.index') }}"
                class="sidebar-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
@@ -120,6 +228,16 @@
                 <span>Rapports</span>
             </a>
         </li>
+        @endif
+        @if(auth()->check() && auth()->user()->canAccessModule('paie'))
+        <li>
+            <a href="{{ route('paie.settings.edit') }}"
+               class="sidebar-item {{ request()->routeIs('paie.settings.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-calculator"></i>
+                <span>Paramètres paie</span>
+            </a>
+        </li>
+        @endif
 
         <li class="text-xs text-gray-400 uppercase px-4 pt-4 pb-2">Compte</li>
         <li>

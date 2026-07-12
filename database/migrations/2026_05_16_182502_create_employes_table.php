@@ -43,6 +43,7 @@ return new class extends Migration
         $table->date('date_embauche');
 
         $table->decimal('salaire_base', 10, 2);
+        
 
         $table->enum('statut', ['Actif', 'Inactif'])
             ->default('Actif');

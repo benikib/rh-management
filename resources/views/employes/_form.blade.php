@@ -28,6 +28,19 @@
         <x-input-error :messages="$errors->get('poste_id')" class="mt-2" />
     </div>
     <div>
+        <x-input-label for="contract_type_id" value="Type de contrat" />
+        <select id="contract_type_id" name="contract_type_id" class="search-select mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            <option value="">— Sélectionner —</option>
+            @foreach ($contractTypes as $contractType)
+                <option value="{{ $contractType->id }}"
+                        @selected(old('contract_type_id', $employeModel?->activeContract?->contract_type_id) == $contractType->id)>
+                    {{ $contractType->label }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('contract_type_id')" class="mt-2" />
+    </div>
+    <div>
         <x-input-label for="matricule" value="Matricule" />
         <x-text-input id="matricule" name="matricule" type="text" class="mt-1 block w-full"
                       :value="old('matricule', $employeModel?->matricule)" required />
@@ -104,6 +117,18 @@
                       class="mt-1 block w-full"
                       :value="old('salaire_base', $employeModel?->salaire_base)" required />
         <x-input-error :messages="$errors->get('salaire_base')" class="mt-2" />
+    </div>
+    <div>
+        <x-input-label for="status_id" value="Statut RH" />
+        <select id="status_id" name="status_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            <option value="">— Sélectionner —</option>
+            @foreach ($employeeStatuses as $employeeStatus)
+                <option value="{{ $employeeStatus->id }}" @selected(old('status_id', $employeModel?->status_id) == $employeeStatus->id)>
+                    {{ $employeeStatus->label }}
+                </option>
+            @endforeach
+        </select>
+        <x-input-error :messages="$errors->get('status_id')" class="mt-2" />
     </div>
     <div>
         <x-input-label for="statut" value="Statut" />

@@ -8,7 +8,7 @@
         </div>
     </x-slot>
 
-    <div class="container mx-auto px-4 py-6">
+    <div class="mx-auto w-full max-w-full px-4 py-6">
     <div class="mb-6 flex items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-semibold text-slate-900">Module de rapports RH</h1>
@@ -23,75 +23,76 @@
         <div class="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-4 text-rose-800">{{ session('error') }}</div>
     @endif
 
-    <div class="grid gap-6 grid-cols-1 lg:grid-cols-[minmax(300px,360px)_1fr]">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm w-full">
+    <div class="grid gap-6 grid-cols-1 lg:grid-cols-[360px_1fr]">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm w-full lg:w-[360px]">
             <h2 class="mb-4 text-lg font-semibold text-slate-900">Filtres de rapport</h2>
 
             <form method="POST" class="space-y-4">
                 @csrf
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Type de rapport</label>
-                    <select name="report_type" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-                        @foreach($reportTypes as $key => $label)
-                            <option value="{{ $key }}" {{ old('report_type', $filters['report_type'] ?? 'presence') === $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>   
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Type de rapport</label>
+                        <select name="report_type" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                            @foreach($reportTypes as $key => $label)
+                                <option value="{{ $key }}" {{ old('report_type', $filters['report_type'] ?? 'presence') === $key ? 's   elected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Période</label>
-                    <select name="period" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-                        @foreach($periods as $key => $label)
-                            <option value="{{ $key }}" {{ old('period', $filters['period'] ?? 'monthly') === $key ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Période</label>
+                        <select name="period" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                            @foreach($periods as $key => $label)
+                                <option value="{{ $key }}" {{ old('period', $filters['period'] ?? 'monthly') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Date de début</label>
                         <input type="date" name="start_date" value="{{ old('start_date', $filters['start_date'] ?? '') }}" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900" />
                     </div>
+
                     <div>
                         <label class="mb-2 block text-sm font-medium text-slate-700">Date de fin</label>
                         <input type="date" name="end_date" value="{{ old('end_date', $filters['end_date'] ?? '') }}" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900" />
                     </div>
-                </div>
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Direction</label>
-                    <select name="direction_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-                        <option value="">Toutes</option>
-                        @foreach($directions as $direction)
-                            <option value="{{ $direction->id }}" {{ (string) old('direction_id', $filters['direction_id'] ?? '') === (string) $direction->id ? 'selected' : '' }}>{{ $direction->nom }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Direction</label>
+                        <select name="direction_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                            <option value="">Toutes</option>
+                            @foreach($directions as $direction)
+                                <option value="{{ $direction->id }}" {{ (string) old('direction_id', $filters['direction_id'] ?? '') === (string) $direction->id ? 'selected' : '' }}>{{ $direction->nom }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Département</label>
-                    <select name="department_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-                        <option value="">Tous</option>
-                        @foreach($departments as $department)
-                            <option value="{{ $department->id }}" {{ (string) old('department_id', $filters['department_id'] ?? '') === (string) $department->id ? 'selected' : '' }}>{{ $department->nom }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Département</label>
+                        <select name="department_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                            <option value="">Tous</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}" {{ (string) old('department_id', $filters['department_id'] ?? '') === (string) $department->id ? 'selected' : '' }}>{{ $department->nom }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Employé</label>
-                    <select name="employe_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
-                        <option value="">Tous</option>
-                        @foreach($employees as $employe)
-                            <option value="{{ $employe->id }}" {{ (string) old('employe_id', $filters['employe_id'] ?? '') === (string) $employe->id ? 'selected' : '' }}>{{ $employe->nom_complet }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Employé</label>
+                        <select name="employe_id" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900">
+                            <option value="">Tous</option>
+                            @foreach($employees as $employe)
+                                <option value="{{ $employe->id }}" {{ (string) old('employe_id', $filters['employe_id'] ?? '') === (string) $employe->id ? 'selected' : '' }}>{{ $employe->nom_complet }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-700">Statut de présence</label>
-                    <input type="text" name="status" value="{{ old('status', $filters['status'] ?? '') }}" placeholder="Present, Absent, Retard, Conge" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900" />
+                    <div>
+                        <label class="mb-2 block text-sm font-medium text-slate-700">Statut de présence</label>
+                        <input type="text" name="status" value="{{ old('status', $filters['status'] ?? '') }}" placeholder="Present, Absent, Retard, Conge" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-900" />
+                    </div>
                 </div>
 
                 <div class="flex flex-col gap-3 pt-4 sm:flex-row">
@@ -102,8 +103,8 @@
             </form>
         </div>
 
-        <div class="space-y-6">
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="space-y-6 w-full">
+            <div class="rounded-2xl border border-slate-200 bg-white p-6">
                 <h2 class="mb-4 text-lg font-semibold text-slate-900">Aperçu du rapport</h2>
 
                 @if(isset($report))

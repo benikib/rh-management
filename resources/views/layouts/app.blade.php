@@ -83,7 +83,11 @@
 
             <!-- Content Slot -->
             <div class="p-6">
-                {{ $slot }}
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    {{ $slot ?? '' }}
+                @endif
             </div>
             @if(session('error'))
 

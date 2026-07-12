@@ -1,0 +1,44 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-white">Détail du journal RH</h2>
+            <div class="flex gap-2">
+                <a href="{{ route('employee-history-logs.edit', $employeeHistoryLog) }}" class="px-4 py-2 bg-white text-blue-600 rounded-lg">Modifier</a>
+                <a href="{{ route('employee-history-logs.index') }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Retour</a>
+            </div>
+        </div>
+    </x-slot>
+
+    <div class="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <p class="text-sm text-gray-500">Employé</p>
+                <p class="text-gray-900">{{ $employeeHistoryLog->employe?->nom_complet ?? '—' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Événement</p>
+                <p class="text-gray-900">{{ App\Models\EmployeeHistoryLog::getEventTypeLabel($employeeHistoryLog->event_type) }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Date</p>
+                <p class="text-gray-900">{{ optional($employeeHistoryLog->event_date)->format('d/m/Y') }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Statut</p>
+                <p class="text-gray-900">{{ $employeeHistoryLog->status?->label ?? '—' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Enregistré par</p>
+                <p class="text-gray-900">{{ $employeeHistoryLog->recordedBy?->name ?? auth()->user()?->name ?? '—' }}</p>
+            </div>
+            <div class="md:col-span-2">
+                <p class="text-sm text-gray-500">Raison</p>
+                <p class="text-gray-900 whitespace-pre-line">{{ $employeeHistoryLog->reason ?? '—' }}</p>
+            </div>
+            <div class="md:col-span-2">
+                <p class="text-sm text-gray-500">Notes</p>
+                <p class="text-gray-900 whitespace-pre-line">{{ $employeeHistoryLog->notes ?? 'Aucune note.' }}</p>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

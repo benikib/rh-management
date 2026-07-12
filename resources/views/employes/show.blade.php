@@ -39,6 +39,14 @@
                 <p class="text-gray-900">{{ $employe->poste?->titre ?? '—' }}</p>
             </div>
             <div>
+                <p class="text-sm text-gray-500">Type de contrat</p>
+                <p class="text-gray-900">{{ $employe->activeContract?->contractType?->label ?? '—' }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Statut RH</p>
+                <p class="text-gray-900">{{ $employe->status?->label ?? '—' }}</p>
+            </div>
+            <div>
                 <p class="text-sm text-gray-500">Sexe</p>
                 <p class="text-gray-900">{{ $employe->sexe }}</p>
             </div>
@@ -65,6 +73,43 @@
             <div>
                 <p class="text-sm text-gray-500">Salaire de base</p>
                 <p class="text-gray-900 font-medium">{{ number_format($employe->salaire_base, 2, ',', ' ') }} $</p>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Dossier RH</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500">État civil</p>
+                    <p class="text-gray-900">{{ $employe->familyInfo?->maritalStatus?->label ?? 'Aucune information' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Enfants / personnes à charge</p>
+                    <p class="text-gray-900">{{ $employe->familyInfo?->dependents->count() ? $employe->familyInfo->dependents->count().' enregistré(s)' : 'Aucun' }}</p>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                <a href="{{ $employe->familyInfo ? route('employee-family-infos.show', $employe->familyInfo) : route('employee-family-infos.create') }}"
+                   class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400">
+                    <p class="text-sm text-gray-500">Dossier familial</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $employe->familyInfo ? 'Voir / Modifier' : 'Ajouter' }}</p>
+                </a>
+                <a href="{{ route('employee-dependents.index') }}"
+                   class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400">
+                    <p class="text-sm text-gray-500">Personnes à charge</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $employe->familyInfo?->dependents->count() ?? 0 }}</p>
+                </a>
+                <a href="{{ route('employee-position-history.index') }}"
+                   class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400">
+                    <p class="text-sm text-gray-500">Historique de poste</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $employe->position_history_count }}</p>
+                </a>
+                <a href="{{ route('employee-history-logs.index') }}"
+                   class="block p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-400">
+                    <p class="text-sm text-gray-500">Journal RH</p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $employe->history_logs_count }}</p>
+                </a>
             </div>
         </div>
 
