@@ -81,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/paie/settings', [PaieSettingController::class, 'edit'])->name('paie.settings.edit');
         Route::put('/paie/settings', [PaieSettingController::class, 'update'])->name('paie.settings.update');
     });
+    Route::get('/presences/live', [PresenceController::class, 'live'])->name('presences.live');
 
     Route::middleware(['role:Administrateur,Responsable RH,Chef de service,Directeur'])->group(function () {
         Route::resource('personnel-tasks', PersonnelTaskController::class);

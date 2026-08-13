@@ -17,6 +17,31 @@ class PresenceController extends Controller
         return view('presences.index', compact('presences'));
     }
 
+    public function live(Request $request)
+{
+    $today = now()->toDateString();
+    
+    // Récupérer les présences du jour
+    $presences = Presence::with('employe')
+        ->whereDate('date_presence', $today)
+        ->orderBy('heure_arrivee', 'desc')
+        ->get();
+    
+    // Calculer les statistiques
+    $stats = [
+        'total_today' => $presences->count(),
+        'arrived_today' => $presences->where('statut', 'Présent')->count(),
+        'departed_today' => $presences->where('statut', 'Parti')->count(),
+        'absent_today' => $presences->where('statut', 'Absent')->count(),
+    ];
+    
+    return response()->json([
+        'presences' => $presences,
+        'stats' => $stats,
+        'timestamp' => now()->toDateTimeString(),
+    ]);
+}
+
     public function create(): View
     {
         $employes = Employe::orderBy('nom')->get();
