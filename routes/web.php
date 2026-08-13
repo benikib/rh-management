@@ -38,11 +38,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+     Route::get('/presences/live', [PresenceController::class, 'live'])->name('presences.live');
     Route::resource('carrieres', CarriereController::class);
     Route::resource('conges', CongeController::class);
     Route::resource('documents', DocumentController::class);
@@ -81,7 +82,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/paie/settings', [PaieSettingController::class, 'edit'])->name('paie.settings.edit');
         Route::put('/paie/settings', [PaieSettingController::class, 'update'])->name('paie.settings.update');
     });
-    Route::get('/presences/live', [PresenceController::class, 'live'])->name('presences.live');
+   
 
     Route::middleware(['role:Administrateur,Responsable RH,Chef de service,Directeur'])->group(function () {
         Route::resource('personnel-tasks', PersonnelTaskController::class);
