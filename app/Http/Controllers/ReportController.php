@@ -59,35 +59,65 @@ class ReportController extends Controller
         ));
     }
 
-    public function exportPdf(ReportRequest $request)
-    {
-        $filters = $this->service->normalizeFilters($request->validated());
-        $reportData = $this->service->getReportData($filters);
-        $fileName = $this->service->getReportFileName($filters, 'pdf');
-        $pdf = Pdf::loadView('reports.pdf.report', compact('reportData', 'filters'))
-            ->setPaper('a4', 'portrait');
+  public function exportPdf(ReportRequest $request)
+{
+    $filters = $this->service->normalizeFilters(
+        $request->validated()
+    );
 
-        Storage::makeDirectory('reports');
-        $path = "reports/{$fileName}";
-        Storage::put($path, $pdf->output());
+    $reportData = $this->service->getReportData($filters);
 
-        $export = ReportExport::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
-            'report_type' => $filters['report_type'],
-            'report_name' => $this->service->getReportName($filters),
-            'file_name' => $fileName,
-            'file_path' => $path,
-            'file_type' => 'pdf',
-            'filters' => $filters,
-            'department_id' => $filters['department_id'],
-            'direction_id' => $filters['direction_id'],
-            'employe_id' => $filters['employe_id'],
-            'generated_by' => Auth::id(),
-            'status' => 'generated',
-        ]);
+    $fileName = $this->service->getReportFileName(
+        $filters,
+        'pdf'
+    );
 
-        return Storage::download($path, $fileName);
+    // Sécuriser le nom du fichier
+    $fileName = \Illuminate\Support\Str::ascii($fileName);
+    $fileName = preg_replace('/[^A-Za-z0-9._-]/', '-', $fileName);
+    $fileName = preg_replace('/-+/', '-', $fileName);
+    $fileName = trim($fileName, '-');
+
+    $pdf = Pdf::loadView(
+        'reports.pdf.report',
+        compact('reportData', 'filters')
+    )->setPaper('a4', 'portrait');
+
+    $disk = Storage::disk('public');
+
+    $disk->makeDirectory('reports');
+
+    $path = "reports/{$fileName}";
+
+    // Générer et enregistrer le PDF
+    $disk->put($path, $pdf->output());
+
+    // Vérification
+    if (!$disk->exists($path)) {
+        throw new \Exception(
+            "Le fichier PDF n'a pas été créé : {$path}"
+        );
     }
+
+    // Enregistrer l'export
+    ReportExport::create([
+        'uuid' => (string) \Illuminate\Support\Str::uuid(),
+        'report_type' => $filters['report_type'],
+        'report_name' => $this->service->getReportName($filters),
+        'file_name' => $fileName,
+        'file_path' => $path,
+        'file_type' => 'pdf',
+        'filters' => $filters,
+        'department_id' => $filters['department_id'] ?? null,
+        'direction_id' => $filters['direction_id'] ?? null,
+        'employe_id' => $filters['employe_id'] ?? null,
+        'generated_by' => Auth::id(),
+        'status' => 'generated',
+    ]);
+
+    // Télécharger
+    return $disk->download($path, $fileName);
+}
 
     public function exportExcel(ReportRequest $request)
     {
